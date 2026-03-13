@@ -16,7 +16,11 @@ import tempfile
 import threading
 import time
 from datetime import datetime
+from pathlib import Path
 from zoneinfo import ZoneInfo
+
+if sys.version_info < (3, 10):
+    sys.exit("sttui requires Python 3.10 or later.")
 
 import numpy as np
 import pyperclip
@@ -25,11 +29,14 @@ import soundfile as sf
 from faster_whisper import WhisperModel
 from pynput import keyboard as pynput_keyboard
 
+_SCRIPT_DIR = Path(__file__).resolve().parent
+VERSION = (_SCRIPT_DIR / "VERSION").read_text().strip()
+
 HOTKEY_RECORD = "ctrl+shift+space"
 HOTKEY_QUIT = "ctrl+c"
 SAMPLE_RATE = 16000
 CHANNELS = 1
-LOG_FILE = "transcription_log.txt"
+LOG_FILE = _SCRIPT_DIR / "transcription_log.txt"
 EASTERN = ZoneInfo("America/New_York")
 MODEL_SIZES = ["tiny", "base", "small", "medium", "large"]
 
@@ -117,9 +124,7 @@ class SpeechToText:
 
         try:
             sf.write(tmp_path, audio, SAMPLE_RATE)
-            segments, info = self.model.transcribe(tmp_path #, 
-                                                   #language="en"
-            )
+            segments, info = self.model.transcribe(tmp_path)
             text = " ".join(seg.text.strip() for seg in segments).strip()
 
             if text:
@@ -184,13 +189,18 @@ def _create_hotkey_listener(on_record):
     """Create a pynput keyboard listener for the record hotkey.
 
     The listener never suppresses keys — all other shortcuts continue to work
-    normally while recording.
+    normally while recording. Includes a 300ms debounce to prevent double-fires.
     """
     pressed = set()
+    last_fire = [0.0]
 
     def on_press(key):
         pressed.add(_normalise_key(key))
         if _RECORD_COMBO.issubset(pressed):
+            now = time.monotonic()
+            if now - last_fire[0] < 0.3:
+                return
+            last_fire[0] = now
             threading.Thread(target=on_record, daemon=True).start()
 
     def on_release(key):
@@ -234,7 +244,6 @@ def run_tui(model_name="base"):
     from textual.containers import Horizontal, Vertical
     from textual.reactive import reactive
     from textual.widgets import Footer, Header, ProgressBar, RichLog, Select, Static
-    from textual.worker import Worker
 
     APP_CSS = """
     #top-bar {
@@ -510,6 +519,7 @@ def run_headless(model_name="base", duration=None):
 
 def main():
     parser = argparse.ArgumentParser(description="sttui — Speech-to-Text TUI")
+    parser.add_argument("--version", action="version", version=f"sttui {VERSION}")
     parser.add_argument("--cli", action="store_true", help="Run in CLI-only mode (no TUI)")
     parser.add_argument("--headless", action="store_true", help="Record, transcribe, print to stdout, and exit (no hotkeys/UI)")
     parser.add_argument("--duration", type=float, default=None, help="Recording duration in seconds (headless mode; omit to wait for Enter)")
