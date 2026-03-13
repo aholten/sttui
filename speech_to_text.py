@@ -1,5 +1,5 @@
 """
-sttui — Speech-to-Text TUI
+stttui — Speech-to-Text TUI
 
 Press Ctrl+Shift+Space to start recording.
 Press Ctrl+Shift+Space again to stop recording, transcribe, and paste.
@@ -20,7 +20,7 @@ from pathlib import Path
 from zoneinfo import ZoneInfo
 
 if sys.version_info < (3, 10):
-    sys.exit("sttui requires Python 3.10 or later.")
+    sys.exit("stttui requires Python 3.10 or later.")
 
 import numpy as np
 import pyperclip
@@ -301,7 +301,7 @@ def run_tui(model_name="base"):
     """
 
     class SpeechToTextApp(App):
-        TITLE = "sttui"
+        TITLE = "stttui"
         CSS = APP_CSS
 
         BINDINGS = [
@@ -518,8 +518,8 @@ def run_headless(model_name="base", duration=None):
 
 
 def main():
-    parser = argparse.ArgumentParser(description="sttui — Speech-to-Text TUI")
-    parser.add_argument("--version", action="version", version=f"sttui {VERSION}")
+    parser = argparse.ArgumentParser(description="stttui — Speech-to-Text TUI")
+    parser.add_argument("--version", action="version", version=f"stttui {VERSION}")
     parser.add_argument("--cli", action="store_true", help="Run in CLI-only mode (no TUI)")
     parser.add_argument("--headless", action="store_true", help="Record, transcribe, print to stdout, and exit (no hotkeys/UI)")
     parser.add_argument("--duration", type=float, default=None, help="Recording duration in seconds (headless mode; omit to wait for Enter)")

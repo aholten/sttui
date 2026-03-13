@@ -3,13 +3,13 @@ set -e
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 
-echo "sttui Uninstaller"
+echo "stttui Uninstaller"
 echo "================="
 echo ""
 
-# Sanity check: verify this is actually an sttui project directory
+# Sanity check: verify this is actually an stttui project directory
 if [ ! -f "$SCRIPT_DIR/speech_to_text.py" ] || [ ! -f "$SCRIPT_DIR/VERSION" ]; then
-    echo "Error: $SCRIPT_DIR does not appear to be an sttui installation."
+    echo "Error: $SCRIPT_DIR does not appear to be an stttui installation."
     exit 1
 fi
 

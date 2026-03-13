@@ -4,7 +4,7 @@ set -e
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 VENV_DIR="$SCRIPT_DIR/.venv"
 
-echo "sttui Installer"
+echo "stttui Installer"
 echo "==============="
 echo ""
 
@@ -53,9 +53,9 @@ elif [ -n "$BASH_VERSION" ] || [ "$(basename "$SHELL" 2>/dev/null)" = "bash" ]; 
     SHELL_NAME="bash"
 fi
 
-ALIAS_LINE="alias sttui='\"$SCRIPT_DIR/run.sh\"'"
+ALIAS_LINE="alias stttui='\"$SCRIPT_DIR/run.sh\"'"
 
-echo "To launch from anywhere, add the sttui alias to your shell:"
+echo "To launch from anywhere, add the stttui alias to your shell:"
 echo ""
 if [ -n "$RC_FILE" ]; then
     echo "  echo '$ALIAS_LINE' >> $RC_FILE && source $RC_FILE"
@@ -64,10 +64,10 @@ else
     echo "  $ALIAS_LINE"
 fi
 echo ""
-echo "Then just run:  sttui"
-echo "You can use with options:   sttui --cli --model small"
+echo "Then just run:  stttui"
+echo "You can use with options:   stttui --cli --model small"
 echo ""
-read -rp "Start sttui now? [y/N] " launch
+read -rp "Start stttui now? [y/N] " launch
 if [[ "$launch" == [yY] ]]; then
     exec bash "$SCRIPT_DIR/run.sh"
 fi

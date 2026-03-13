@@ -10,7 +10,7 @@ case "$(uname -s)" in
     *)                     BIN_DIR="$VENV_DIR/bin" ;;
 esac
 
-echo "sttui Updater"
+echo "stttui Updater"
 echo "============="
 
 # Detect python command

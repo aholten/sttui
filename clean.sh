@@ -4,7 +4,7 @@ set -e
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 VENV_DIR="$SCRIPT_DIR/.venv"
 
-echo "sttui Clean"
+echo "stttui Clean"
 echo "==========="
 echo ""
 echo "This will remove:"

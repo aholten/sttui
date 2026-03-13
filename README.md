@@ -1,13 +1,13 @@
-# sttui: Speech To Text Terminal User Interface
+# stttui: Speech To Text Terminal User Interface
 
-> **v0.1.0** | Shell, Python 3.10+ | MIT License
+> **v0.1.1** | Shell, Python 3.10+ | MIT License
 
 A local, fully offline speech-to-text tool powered by [faster-whisper](https://github.com/SYSTRAN/faster-whisper). Record audio with a global hotkey from any window, transcribe it on-device, and get the result copied straight to your clipboard — no cloud, no API keys, no latency.
 
 Comes with a polished terminal UI built on [Textual](https://github.com/Textualize/textual), complete with a live audio level meter, transcription history, and on-the-fly model switching.
 
 <p align="center">
-  <img src="demo.gif" alt="sttui in action" width="700">
+  <img src="demo.gif" alt="stttui in action" width="700">
 </p>
 
 ---
@@ -26,8 +26,8 @@ Comes with a polished terminal UI built on [Textual](https://github.com/Textuali
 ## Quick Start
 
 ```bash
-git clone https://github.com/your-username/sttui.git
-cd sttui
+git clone https://github.com/your-username/stttui.git
+cd stttui
 chmod +x install.sh run.sh
 ./install.sh
 ./run.sh
@@ -126,7 +126,7 @@ In TUI mode you can switch models from the dropdown at any time.
 
 | Script | Description |
 |---|---|
-| `install.sh` | Set up venv, install deps, and print `sttui` alias instructions |
+| `install.sh` | Set up venv, install deps, and print `stttui` alias instructions |
 | `run.sh` | Launch the app (prompts to install if no venv found) |
 | `update.sh` | Pull latest changes and upgrade dependencies |
 | `clean.sh` | Remove venv, cache, and logs (keeps source files) |
