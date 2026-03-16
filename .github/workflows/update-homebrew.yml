@@ -1,0 +1,102 @@
+name: Update Homebrew Formula
+
+on:
+  workflow_run:
+    workflows: ["Publish to PyPI"]
+    types: [completed]
+
+permissions:
+  contents: write
+
+jobs:
+  update-formula:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install tools
+        run: pip install homebrew-pypi-poet
+
+      - name: Wait for PyPI availability
+        run: |
+          VERSION=$(python -c "import tomllib; print(tomllib.load(open('pyproject.toml','rb'))['project']['version'])")
+          echo "VERSION=$VERSION" >> "$GITHUB_ENV"
+          for i in {1..30}; do
+            if pip install "stttui==$VERSION" --dry-run 2>/dev/null; then
+              echo "Package available on PyPI"
+              break
+            fi
+            echo "Waiting for PyPI... attempt $i"
+            sleep 10
+          done
+
+      - name: Generate resource stanzas
+        run: |
+          pip install "stttui==$VERSION"
+          poet stttui > resources.txt
+          cat resources.txt
+
+      - name: Update formula
+        run: |
+          python - <<'SCRIPT'
+          import re, subprocess, hashlib, urllib.request, os
+
+          version = os.environ["VERSION"]
+
+          # Get sdist URL and SHA256
+          url = f"https://files.pythonhosted.org/packages/source/s/stttui/stttui-{version}.tar.gz"
+          sha256 = hashlib.sha256(urllib.request.urlopen(url).read()).hexdigest()
+
+          # Read resource stanzas (skip the stttui entry itself)
+          with open("resources.txt") as f:
+              resources_raw = f.read()
+
+          # Remove the stttui resource block (it's the main package, not a dep)
+          resources = re.sub(
+              r'  resource "stttui" do\n.*?\n.*?\n  end\n\n?',
+              '',
+              resources_raw,
+              flags=re.DOTALL
+          )
+
+          with open("Formula/stttui.rb") as f:
+              formula = f.read()
+
+          # Update url
+          formula = re.sub(
+              r'url ".*?"',
+              f'url "{url}"',
+              formula
+          )
+          # Update sha256 (first occurrence, the main one)
+          formula = re.sub(
+              r'sha256 "[a-f0-9]+"',
+              f'sha256 "{sha256}"',
+              formula,
+              count=1
+          )
+          # Update resources block
+          formula = re.sub(
+              r'(# --- auto-generated resources ---\n).*?(  # --- end resources ---)',
+              r'\1' + resources + r'  \2',
+              formula,
+              flags=re.DOTALL
+          )
+
+          with open("Formula/stttui.rb", "w") as f:
+              f.write(formula)
+          SCRIPT
+
+      - name: Commit updated formula
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add Formula/stttui.rb
+          git diff --cached --quiet && echo "No changes" && exit 0
+          git commit -m "formula: update stttui to $VERSION"
+          git push

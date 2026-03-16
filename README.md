@@ -1,6 +1,6 @@
 # stttui: Speech To Text Terminal User Interface
 
-> **v0.1.1** | Shell, Python 3.10+ | MIT License
+> **v0.2.0** | Python 3.10+ | MIT License
 
 A local, fully offline speech-to-text tool powered by [faster-whisper](https://github.com/SYSTRAN/faster-whisper). Record audio with a global hotkey from any window, transcribe it on-device, and get the result copied straight to your clipboard — no cloud, no API keys, no latency.
 
@@ -23,17 +23,35 @@ Comes with a polished terminal UI built on [Textual](https://github.com/Textuali
 - **Cross-platform** — works on Windows, macOS, and Linux
 - **Three modes** — rich TUI (default), lightweight CLI (`--cli`), or headless (`--headless`) for scripting/piping
 
-## Quick Start
+## Installation
+
+### Homebrew (macOS / Linux)
 
 ```bash
-git clone https://github.com/your-username/stttui.git
-cd stttui
-chmod +x install.sh run.sh
-./install.sh
-./run.sh
+brew tap aholten/tap
+brew install stttui
 ```
 
-> On Windows, use Git Bash or MSYS2. On first run without a venv, `run.sh` will prompt to run `install.sh` for you.
+### pip / pipx
+
+```bash
+# With pipx (recommended — isolated environment)
+pipx install stttui
+
+# Or with pip
+pip install stttui
+```
+
+### From source
+
+```bash
+git clone https://github.com/aholten/sttui.git
+cd stttui
+pip install .
+```
+
+> On macOS you may need to grant terminal accessibility permissions for global hotkeys.
+> On Linux, install `portaudio` (`sudo apt install portaudio19-dev`) and `xclip` for clipboard support.
 
 ## Usage
 
@@ -58,7 +76,7 @@ These work **globally** — even when the terminal is not focused:
 ### TUI Mode (default)
 
 ```bash
-./run.sh
+stttui
 ```
 
 The terminal interface includes:
@@ -71,7 +89,7 @@ The terminal interface includes:
 ### CLI Mode
 
 ```bash
-./run.sh --cli
+stttui --cli
 ```
 
 Minimal output, no UI — just hotkeys and clipboard.
@@ -82,13 +100,13 @@ Record, transcribe, print to stdout, and exit. No hotkeys or UI — ideal for sc
 
 ```bash
 # Record until crtl+shift+space is pressed
-./run.sh --headless
+stttui --headless
 
 # Record for exactly 10 seconds
-./run.sh --headless --duration 10
+stttui --headless --duration 10
 
 # Pipe transcription to another command
-./run.sh --headless --duration 5 | xargs echo "You said:"
+stttui --headless --duration 5 | xargs echo "You said:"
 ```
 
 Status messages go to stderr, transcription goes to stdout.
@@ -105,7 +123,7 @@ Status messages go to stderr, transcription goes to stdout.
 
 ```bash
 # Example: launch with the small model
-./run.sh --model small
+stttui --model small
 ```
 
 ## Model Sizes
@@ -121,16 +139,6 @@ Larger models are more accurate but slower to load and transcribe. All models ru
 | `large` | 1550M | Slowest |
 
 In TUI mode you can switch models from the dropdown at any time.
-
-## Scripts
-
-| Script | Description |
-|---|---|
-| `install.sh` | Set up venv, install deps, and print `stttui` alias instructions |
-| `run.sh` | Launch the app (prompts to install if no venv found) |
-| `update.sh` | Pull latest changes and upgrade dependencies |
-| `clean.sh` | Remove venv, cache, and logs (keeps source files) |
-| `uninstall.sh` | Remove the entire project directory |
 
 ## Platform Notes
 
