@@ -31,9 +31,9 @@ jobs:
           python-version: "3.12"
 
       - name: Install tools
-        # setuptools provides pkg_resources, which homebrew-pypi-poet imports
-        # but Python 3.12 no longer bundles by default.
-        run: pip install setuptools homebrew-pypi-poet
+        # homebrew-pypi-poet imports pkg_resources, which setuptools removed
+        # as a top-level module in 82.0. Pin to the last version that ships it.
+        run: pip install "setuptools<81" homebrew-pypi-poet
 
       - name: Resolve version and wait for PyPI availability
         run: |
