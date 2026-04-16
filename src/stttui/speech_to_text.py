@@ -30,6 +30,7 @@ from faster_whisper import WhisperModel
 from pynput import keyboard as pynput_keyboard
 
 from stttui import __version__ as VERSION
+from stttui.singleton import AlreadyRunningError, acquire_singleton_lock
 
 HOTKEY_RECORD = "ctrl+shift+space"
 HOTKEY_QUIT = "ctrl+c"
@@ -227,7 +228,7 @@ def run_cli(model_name="base"):
     print(f"  Press {HOTKEY_QUIT} to quit")
     print("\nListening for hotkey...")
 
-    signal.signal(signal.SIGINT, lambda *_: os._exit(0))
+    signal.signal(signal.SIGINT, lambda *_: sys.exit(0))
 
     listener = _create_hotkey_listener(on_record=stt.toggle_recording)
     listener.start()
@@ -525,6 +526,16 @@ def main():
     parser.add_argument("--duration", type=float, default=None, help="Recording duration in seconds (headless mode; omit to wait for Enter)")
     parser.add_argument("--model", default="base", choices=MODEL_SIZES, help="Whisper model size")
     args = parser.parse_args()
+
+    try:
+        acquire_singleton_lock()
+    except AlreadyRunningError as e:
+        print(
+            f"stttui is already running (PID {e.pid}). "
+            f"Stop the other instance or `kill {e.pid}` first.",
+            file=sys.stderr,
+        )
+        sys.exit(1)
 
     if args.headless:
         run_headless(model_name=args.model, duration=args.duration)

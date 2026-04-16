@@ -1,6 +1,6 @@
 # stttui: Speech To Text Terminal User Interface
 
-> **v0.2.0** | Python 3.10+ | MIT License
+> **v0.3.0** | Python 3.10+ | MIT License
 
 A local, fully offline speech-to-text tool powered by [faster-whisper](https://github.com/SYSTRAN/faster-whisper). Record audio with a global hotkey from any window, transcribe it on-device, and get the result copied straight to your clipboard — no cloud, no API keys, no latency.
 
